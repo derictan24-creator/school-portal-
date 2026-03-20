@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body { font-family: Arial; margin:0; background:#eef2f7; }
+
+header {
+  background:#002b5c;
+  color:white;
+  padding:15px;
+  text-align:center;
+}
+
+.container { padding:15px; }
+
+.card {
+  background:white;
+  padding:15px;
+  margin-bottom:15px;
+  border-radius:10px;
+}
+
+input {
+  width:100%;
+  padding:10px;
+  margin:5px 0;
+}
+
+button {
+  width:100%;
+  padding:10px;
+  background:#002b5c;
+  color:white;
+  border:none;
+}
+
+#output { margin-top:10px; }
+< body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: #f4f6f9;
+}
+
+header {
+  background: linear-gradient(90deg, #002b5c, #0056b3);
+  color: white;
+  padding: 20px;
+  text-align: center;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.container {
+  padding: 15px;
+  max-width: 500px;
+  margin: auto;
+}
+
+.card {
+  background: white;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+h3 {
+  margin-top: 0;
+  color: #002b5c;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  margin: 6px 0;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+input:focus {
+  outline: none;
+  border: 1px solid #0056b3;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  background: #002b5c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: #0056b3;
+}
+
+#output {
+  margin-top: 10px;
+  padding: 10px;
+  background: #f9f9f9;
+  border-radius: 6px;
+  font-size: 14px;>
+}
+</head>
+
+<body>
+
+<header>🏫 Supreme Heights College Portal</header>
+
+<div class="container">
+
+<div class="card">
+<h3>🔐 Login</h3>
+<input id="email" placeholder="Email">
+<input id="password" type="password" placeholder="Password">
+<button onclick="login()">Login</button>
+</div>
+
+<div class="card">
+<h3>👨‍💼 Admin Panel</h3>
+<input id="teacherCode" placeholder="Create Teacher Code">
+<button onclick="saveTeacherCode()">Save Code</button>
+</div>
+
+<div class="card">
+<h3>👩‍🏫 Teacher Panel</h3>
+
+<button onclick="updateResult()">Update Result</button>
+
+<input id="teacherAccess" placeholder="Enter Teacher Code">
+<input id="studentCode" placeholder="Student Code">
+<input id="subject" placeholder="Subject">
+<input id="score" placeholder="Score">
+<button onclick="addResult()">Add Result</button>
+</div>
+
+<div class="card">
+<h3>🎓 Student Dashboard</h3>
+<input id="checkCode" placeholder="Student Code">
+<button onclick="getResults()">Check Results</button>
+
+<div id="output"></div>
+</div>
+
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword } 
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs } 
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBOxteselLPMFUp1tRhQF1oEjtTRmxbDKY",
+  authDomain: "supreme-a1115.firebaseapp.com",
+  projectId: "supreme-a1115",
+  storageBucket: "supreme-a1115.firebasestorage.app",
+  messagingSenderId: "314093327310",
+  appId: "1:314093327310:web:40c5cc52a5744f4736119f"
+};
+
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// 🔐 LOGIN
+window.login = async function(){
+  try {
+    await signInWithEmailAndPassword(auth, email.value, password.value);
+    alert("Logged in");
+  } catch(e){
+    alert(e.message);
+  }
+}
+
+// 👨‍💼 ADMIN SAVE CODE
+window.saveTeacherCode = async function(){
+  await addDoc(collection(db,"teacherCodes"), {
+    code: teacherCode.value
+  });
+  alert("Teacher code saved");
+}
+
+<div id="adminOutput"></div>
+
+// 👩‍🏫 TEACHER ADD RESULT
+window.addResult = async function(){
+
+  let codes = await getDocs(collection(db,"teacherCodes"));
+  let valid = false;
+
+  codes.forEach(doc=>{
+    if(doc.data().code === teacherAccess.value){
+      valid = true;
+    }
+  });
+
+  if(!valid){
+    alert("Invalid teacher code");
+    return;
+  }
+
+  await addDoc(collection(db,"results"), {
+    code: studentCode.value,
+    subject: subject.value,
+    score: parseInt(score.value)
+  });
+
+  alert("Result added");
+}
+
+<div id="teacherOutput"></div>
+
+// 🎓 GRADE FUNCTION
+function grade(score){
+  if(score>=80) return "A";
+  if(score>=70) return "B";
+  if(score>=60) return "C";
+  if(score>=50) return "D";
+  return "F";
+}
+
+// 🎓 STUDENT VIEW
+window.getResults = async function(){
+  let data = await getDocs(collection(db,"results"));
+
+  let total = 0;
+  let count = 0;
+  let text = "<h4>Results</h4>";
+
+  data.forEach(doc=>{
+    let d = doc.data();
+
+    if(d.code === checkCode.value){
+      total += d.score;
+      count++;
+
+      text += d.subject + ": " + d.score + " ("+grade(d.score)+")<br>";
+    }
+  });
+
+  if(count === 0){
+    output.innerHTML = "No result found";
+    return;
+  }
+
+  let avg = (total/count).toFixed(2);
+
+  text += "<hr>Total: "+total;
+  text += "<br>Average: "+avg;
+
+  output.innerHTML = text;
+}
+
+</script>
+
+</body>
+</html>
+<div class="card" id="adminPanel">...</div>
+<div class="card" id="teacherPanel">...</div>
+<div class="card" id="studentPanel">...</div>
+<button onclick="register('teacher')">Create Teacher</button>
+<button onclick="register('student')">Create Student</button>
+
+<div class="card" id="adminPanel" style="display:none;">...</div>
+<div class="card" id="teacherPanel" style="display:none;">...</div>
+<div class="card" id="studentPanel" style="display:none;">...</div>
+
+<div class="card" id="adminPanel" style="display:none;">...</div>
+<div class="card" id="teacherPanel" style="display:none;">...</div>
+<div class="card" id="studentPanel" style="display:none;">...</div>
